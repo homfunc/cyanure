@@ -1187,7 +1187,7 @@ def compute_r(estimator_name, aux, X, labels, active_set):
 
     if len(active_set) > 0:
         pred = aux.predict(X[:, active_set])
-        
+
     if estimator_name == "Lasso":
         if len(active_set) == 0:
             R = labels
@@ -1308,7 +1308,7 @@ class Lasso(Regression):
             super().fit(X, labels)
         else:
             aux = Regression(loss='square', penalty='l1',
-                             fit_intercept=self.fit_intercept, random_state=self.random_state)
+                             fit_intercept=self.fit_intercept, random_state=self.random_state, verbose=False)
 
             fit_large_feature_number(self, aux, X, labels)
 
@@ -1370,7 +1370,7 @@ class L1Logistic(Classifier):
             super().fit(X, labels, le_parameter=self.le_)
         else:
             aux = Classifier(
-                loss='logistic', penalty='l1', fit_intercept=self.fit_intercept)
+                loss='logistic', penalty='l1', fit_intercept=self.fit_intercept, verbose=False)
 
             fit_large_feature_number(self, aux, X, labels)
 
