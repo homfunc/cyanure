@@ -4,7 +4,6 @@ import subprocess
 
 import scipy
 import numpy as np
-import pandas as pd
 from mlflow.tracking import MlflowClient
 
 from cyanure.estimators import Classifier, Regression
@@ -159,7 +158,7 @@ def main(arguments):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--dataset", default="covtype")
+    parser.add_argument("--dataset", default="epsilon")
     parser.add_argument("--penalty", default="l2")
     parser.add_argument("--solver", default="qning-miso")
     parser.add_argument("--loss", default="logistic")
