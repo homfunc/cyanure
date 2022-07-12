@@ -1326,10 +1326,10 @@ class Lasso(Regression):
             super().fit(X, labels)
         else:
             aux = Regression(loss='square', penalty='l1',
-                             fit_intercept=self.fit_intercept, random_state=self.random_state, 
+                             fit_intercept=self.fit_intercept, random_state=self.random_state,
                              lambda_1=self.lambda_1, safe=self.safe,
-                                tol=self.tol, duality_gap_interval=self.duality_gap_interval, 
-                                max_iter=self.max_iter, solver=self.solver, verbose=self.verbose)
+                             max_itertol=self.tol, duality_gap_interval=self.duality_gap_interval,
+                             max_iter=self.max_iter, solver=self.solver, verbose=self.verbose)
 
             fit_large_feature_number(self, aux, X, labels)
 
@@ -1396,10 +1396,11 @@ class L1Logistic(Classifier):
             super().fit(X, labels, le_parameter=self.le_)
         else:
             aux = Classifier(
-                loss='logistic', penalty='l1', fit_intercept=self.fit_intercept, random_state=self.random_state, 
-                lambda_1=self.lambda_1, safe=self.safe, tol=self.tol, 
-                duality_gap_interval=self.duality_gap_interval, max_iter=self.max_iter, solver=self.solver,
-                verbose=self.verbose)
+                loss='logistic', penalty='l1', fit_intercept=self.fit_intercept,
+                random_state=self.random_state,
+                lambda_1=self.lambda_1, safe=self.safe, tol=self.tol,
+                duality_gap_interval=self.duality_gap_interval, max_iter=self.max_iter,
+                solver=self.solver, verbose=self.verbose)
 
             fit_large_feature_number(self, aux, X, labels)
 
