@@ -1172,7 +1172,7 @@ class LogisticRegression(Classifier):
                          n_threads=n_threads, dual=dual, safe=safe)
 
 
-def compute_r(estimator_name, aux, X, labels, active_set):
+def compute_r(estimator_name, aux, X, labels, active_set, fit_intercept):
     """
     Compute R coefficient corresponding to the estimator.
 
@@ -1213,6 +1213,8 @@ def compute_r(estimator_name, aux, X, labels, active_set):
             R = -0.5 * labels.ravel()
         else:
             R = -labels.ravel() / (1.0 + np.exp(labels.ravel() * pred.ravel()))
+        if fit_intercept:
+            pred += aux.intercept_
 
     return R
 
