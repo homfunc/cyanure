@@ -1309,6 +1309,7 @@ def execute_fit_large_feature_number(instance, auxiliary_solver, X, labels):
         f = executor.submit(fit_large_feature_number, instance, auxiliary_solver, X, labels)
         return f.result()  # will rethrow any exceptions
 
+
 class Lasso(Regression):
     """
     A pre-configured class for Lasso regression.
@@ -1440,6 +1441,5 @@ class L1Logistic(Classifier):
             self.coef_ = estimator.coef_
             if self.fit_intercept:
                 self.intercept_ = estimator.intercept_
-
 
         return self
