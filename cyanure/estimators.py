@@ -8,6 +8,8 @@ import warnings
 import platform
 from collections import defaultdict
 
+import concurrent.futures
+
 import numpy as np
 import scipy.sparse
 
@@ -1244,11 +1246,14 @@ def fit_large_feature_number(estimator, aux, X, labels):
 
     scaling = 4.0
     init = min(100, p)
-    estimator.restart = True
+
     num_as = math.ceil(math.log10(p / init) / math.log10(scaling))
     active_set = []
     n_active = 0
+
     estimator.coef_ = np.zeros(p, dtype=X.dtype)
+    estimator.restart = True
+
     if estimator.fit_intercept:
         estimator.intercept_ = 0
 
@@ -1295,6 +1300,14 @@ def fit_large_feature_number(estimator, aux, X, labels):
     if estimator.fit_intercept:
         estimator.intercept_ = aux.intercept_
 
+    return estimator
+
+
+def execute_fit_large_feature_number(instance, auxiliary_solver, X, labels):
+
+    with concurrent.futures.ProcessPoolExecutor() as executor:
+        f = executor.submit(fit_large_feature_number, instance, auxiliary_solver, X, labels)
+        return f.result()  # will rethrow any exceptions
 
 class Lasso(Regression):
     """
@@ -1347,7 +1360,11 @@ class Lasso(Regression):
                              tol=self.tol, duality_gap_interval=self.duality_gap_interval,
                              max_iter=self.max_iter, solver=self.solver, verbose=self.verbose)
 
-            fit_large_feature_number(self, aux, X, labels)
+            estimator = execute_fit_large_feature_number(self, aux, X, labels)
+
+            self.coef_ = estimator.coef_
+            if self.fit_intercept:
+                self.intercept_ = estimator.intercept_
 
         return self
 
@@ -1418,6 +1435,11 @@ class L1Logistic(Classifier):
                 duality_gap_interval=self.duality_gap_interval, max_iter=self.max_iter,
                 solver=self.solver, verbose=self.verbose)
 
-            fit_large_feature_number(self, aux, X, labels)
+            estimator = execute_fit_large_feature_number(self, aux, X, labels)
+
+            self.coef_ = estimator.coef_
+            if self.fit_intercept:
+                self.intercept_ = estimator.intercept_
+
 
         return self
