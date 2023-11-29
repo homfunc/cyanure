@@ -730,10 +730,11 @@ class Regression(ERM):
             X = check_input_inference(X, self)
 
         X = self._validate_data(X, accept_sparse="csr", reset=False)
-        pred = safe_sparse_dot(
-            X, self.coef_, dense_output=False)
         if self.fit_intercept:
-            pred = pred + self.intercept_
+            pred = safe_sparse_dot(
+                X, self.coef_, dense_output=False) + self.intercept_
+        else:
+            pred = safe_sparse_dot(X, self.coef_, dense_output=False)
 
         return pred.squeeze()
 
@@ -1214,6 +1215,7 @@ def compute_r(estimator_name, aux, X, labels, active_set, fit_intercept):
             R = -0.5 * labels.ravel()
         else:
             R = -labels.ravel() / (1.0 + np.exp(labels.ravel() * pred.ravel()))
+        # To Do - is this supposed to be here - does it apply to a logistic regression?        
         if fit_intercept:
             pred += aux.intercept_
 
@@ -1239,7 +1241,6 @@ def fit_large_feature_number(estimator, aux, X, labels):
             Labels matrix
     """
     n, p = X.shape
-    estimator_name = type(estimator).__name__
 
     scaling = 4.0
     init = min(100, p)
@@ -1257,7 +1258,7 @@ def fit_large_feature_number(estimator, aux, X, labels):
     estimator_name = type(estimator).__name__
 
     for ii in range(num_as):
-        R = compute_r(estimator_name, aux, X, labels, active_set)
+        R = compute_r(estimator_name, aux, X, labels, active_set, estimator.fit_intercept)
 
         # I'm still not sure about this
         # if estimator_name == "L1Logistic":
