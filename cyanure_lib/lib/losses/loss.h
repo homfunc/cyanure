@@ -136,14 +136,14 @@ class Loss {
       Loss<M,L,D>& operator=(const Loss<M,L,D>& loss);
 };
 
-template <typename loss_type>
-class ProximalPointLoss final : public loss_type {
+template <typename BaseLoss>
+class ProximalPointLoss final : public BaseLoss {
    public:
-      typedef typename loss_type::value_type T;
-      typedef typename loss_type::variable_type D;
+      typedef typename BaseLoss::value_type T;
+      typedef typename BaseLoss::variable_type D;
 
-      ProximalPointLoss(const loss_type& loss, const D& z, const T kappa) 
-         : loss_type(loss.data(), loss.y()), _loss(loss), _kappa(kappa)  { 
+      ProximalPointLoss(const BaseLoss& loss, const D& z, const T kappa) 
+         : BaseLoss(loss.data(), loss.y()), _loss(loss), _kappa(kappa)  { 
             _z.copy(z);
             this->_id=PPA;
          };
@@ -234,7 +234,7 @@ class ProximalPointLoss final : public loss_type {
 
    
    private:
-      const loss_type& _loss;
+      const BaseLoss& _loss;
       const T _kappa;
       D _z;
 };

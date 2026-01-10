@@ -1,7 +1,17 @@
 #ifndef CONFIGURE_BLAS_H
 #define CONFIGURE_BLAS_H
 
-#include <cblas.h>
+#if defined(__has_include)
+#  if __has_include(<cblas.h>)
+#    include <cblas.h>
+#  elif __has_include(<openblas/cblas.h>)
+#    include <openblas/cblas.h>
+#  else
+#    error "Could not find a CBLAS header (tried <cblas.h> and <openblas/cblas.h>)"
+#  endif
+#else
+#  include <cblas.h>
+#endif
 
 #ifdef HAVE_MKL
 extern "C" {
@@ -37,7 +47,11 @@ static inline int init_omp(const int numThreads) {
     NUM_THREADS = (numThreads == -1) ? MIN(MAX_THREADS, omp_get_num_procs()) : numThreads;
     omp_set_dynamic(1);
     omp_set_num_threads(NUM_THREADS);
+    #if defined(_MSC_VER)
+    omp_set_nested(0);
+    #else
     omp_set_max_active_levels(1);
+    #endif
 #ifdef HAVE_MKL
     set_mkl_parallel();
 #elif defined(HAVE_OPENBLAS)

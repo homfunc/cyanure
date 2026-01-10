@@ -42,16 +42,16 @@ class LinearLossMat : public Loss< M, L, Matrix<typename M::value_type> > {
       DataMatrixLinear<M>& _data;
 };
 
-template <typename loss_type>
-class LossMat : public LinearLossMat<typename loss_type::data_type, Matrix<typename loss_type::value_type> > {
+template <typename loss_vec_type>
+class LossMat : public LinearLossMat<typename loss_vec_type::data_type, Matrix<typename loss_vec_type::value_type> > {
    public:
-      typedef typename loss_type::value_type T;
-      typedef typename loss_type::data_type M;
-      typedef typename loss_type::label_type L;
+      typedef typename loss_vec_type::value_type T;
+      typedef typename loss_vec_type::data_type M;
+      typedef typename loss_vec_type::label_type L;
       typedef LinearLossMat<M, Matrix<T> > base_loss;
 
       LossMat(DataMatrixLinear<M>& data, const Matrix<T>& y) : base_loss(data,y), _N(y.m()) {
-         _losses=new loss_type*[_N];
+         _losses=new loss_vec_type*[_N];
          _datas=new DataLinear<M>*[_N];
          _n = y.n();
          y.transpose(_yT);
@@ -59,7 +59,7 @@ class LossMat : public LinearLossMat<typename loss_type::data_type, Matrix<typen
          for (int i = 0; i<_N; ++i) {
             _datas[i]=data.toDataLinear(); 
             _yT.refCol(i,ycol);
-            _losses[i]=new loss_type(*(_datas[i]),ycol);
+            _losses[i]=new loss_vec_type(*(_datas[i]),ycol);
          }
          this->_id=_losses[0]->id();
       };
@@ -205,7 +205,7 @@ class LossMat : public LinearLossMat<typename loss_type::data_type, Matrix<typen
    protected:
       int _N;
       int _n;
-      loss_type** _losses;
+      loss_vec_type** _losses;
       DataLinear<M>** _datas;
       Matrix<T> _yT;
 };

@@ -6,6 +6,7 @@
 
 #include <string.h>
 #include <stddef.h>
+#include <cmath>
 #ifdef small
 #undef small
 #endif
@@ -144,7 +145,11 @@ INTT cblas_idamin( INTT n,  double* X,  INTT incX);
 INTT cblas_isamin( INTT n,  float* X,  INTT incX);
 
 //#define HAVE_MKL
+//#define HAVE_OPENBLAS
+
+#ifndef HAVE_OPENBLAS
 #define HAVE_OPENBLAS
+#endif
 
 template <typename T>
 static inline T alt_log(const T x);
